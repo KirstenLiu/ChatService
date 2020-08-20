@@ -90,7 +90,7 @@ namespace ChatClient
         public void ExecuteCommand(InputCommand inputCommand, Dictionary<string, string> msgToScreen, ChatAPI chat){
             string result = chat.Login(inputCommand.Parameters[0]).Result;
             LoginResponse deserializedResult = JsonConvert.DeserializeObject<LoginResponse>(result);
-            Console.WriteLine("Debug logging: uid is {0}", deserializedResult.Uid.ID);
+            Console.WriteLine("Debug logging: uid is {0}", deserializedResult.Uid.Id);
             if(deserializedResult.Success){
                 Console.WriteLine("you are now login. Please refer to following chatrooms names of your joined chatrooms:");
                 if(deserializedResult.JoinedChatRoom != null){
@@ -137,7 +137,6 @@ namespace ChatClient
             
             string inLines = null;
             string[] words = null;
-            string inputCommand = null;
             string[] parameters = new string[MAX_PARAM];
 
             var chat = new ChatAPI();
@@ -153,15 +152,13 @@ namespace ChatClient
             do {
                 try{
                     words = null;
-                    inputCommand = null;
                     inLines = Console.ReadLine();
                     words = inLines.Split();
                     if(words[0][0] == '/'){
-                        inputCommand = words[0].Replace("/", "");
+                        InputCommand command = new InputCommand();
+                        command.Command = words[0].Replace("/", "");
                         Array.Resize(ref parameters, words.Length - 1);
                         Array.Copy(words, 1, parameters, 0, words.Length - 1);
-                        InputCommand command = new InputCommand();
-                        command.Command = inputCommand;
                         command.Parameters = parameters;
 
                         if(commands.ContainsKey(command.Command)){
