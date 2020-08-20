@@ -1,0 +1,13 @@
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/client_csharp
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/client_csharp.deps.json
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/client_csharp.runtimeconfig.json
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/client_csharp.runtimeconfig.dev.json
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/client_csharp.dll
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/client_csharp.pdb
+/Users/kirstenliu/training/chat_room/client_csharp/obj/Debug/netcoreapp3.1/client_csharp.csprojAssemblyReference.cache
+/Users/kirstenliu/training/chat_room/client_csharp/obj/Debug/netcoreapp3.1/client_csharp.AssemblyInfoInputs.cache
+/Users/kirstenliu/training/chat_room/client_csharp/obj/Debug/netcoreapp3.1/client_csharp.AssemblyInfo.cs
+/Users/kirstenliu/training/chat_room/client_csharp/obj/Debug/netcoreapp3.1/client_csharp.dll
+/Users/kirstenliu/training/chat_room/client_csharp/obj/Debug/netcoreapp3.1/client_csharp.pdb
+/Users/kirstenliu/training/chat_room/client_csharp/bin/Debug/netcoreapp3.1/Newtonsoft.Json.dll
+/Users/kirstenliu/training/chat_room/client_csharp/obj/Debug/netcoreapp3.1/client_csharp.csproj.CopyComplete
