@@ -155,14 +155,14 @@ namespace ChatClient
                     inLines = Console.ReadLine();
                     words = inLines.Split();
                     if(words[0][0] == '/'){
-                        InputCommand command = new InputCommand();
-                        command.Command = words[0].Replace("/", "");
+                        InputCommand inputCommand = new InputCommand();
+                        inputCommand.Command = words[0].Replace("/", "");
                         Array.Resize(ref parameters, words.Length - 1);
                         Array.Copy(words, 1, parameters, 0, words.Length - 1);
-                        command.Parameters = parameters;
+                        inputCommand.Parameters = parameters;
 
-                        if(commands.ContainsKey(command.Command)){
-                            commands[command.Command].ExecuteCommand(command, msgToScreen, chat);
+                        if(commands.ContainsKey(inputCommand.Command)){
+                            commands[inputCommand.Command].ExecuteCommand(inputCommand, msgToScreen, chat);
                         }else{
                             Console.WriteLine(msgToScreen["cmdNotExist"]);
                             Console.WriteLine(msgToScreen["cmdList"]);
