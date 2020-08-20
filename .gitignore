@@ -4,3 +4,4 @@ client_csharp/obj/Debug/netcoreapp3.1/.NETCoreApp,Version=v3.1.AssemblyAttribute
 design_doc.txt
 go.mod
 sequence_diagram.png
+.DS_Store
