@@ -23,32 +23,18 @@ namespace ChatClient
     }
 
     public struct UserId{
-        public UserId(int Id){
-            ID = Id;
-        }
-        public int ID {get;}
+        public int Id {get;set;}
     }
 
     public struct ChatRoomId{
-        public ChatRoomId(int in_id){
-            Id = in_id;
-        }
-        public int Id {get;}
+        public int Id {get;set;}
     }
     
     public struct LoginRequest{
-        public LoginRequest(string in_userName){
-            UserName = in_userName;
-        }
-        public string UserName {get;} 
+        public string UserName {get;set;} 
     }
 
     public struct LoginResponse{
-        /*public LoginResponse(bool Success, UserId Uid, ChatRoom[] JoinedChatRoom){
-            SUCCESS = Success;
-            UID = Uid;
-            JOINEDCHATROOM = JoinedChatRoom;
-        }*/
         public bool Success {get;set;} 
         public UserId Uid {get;set;}
         public ChatRoom[] JoinedChatRoom {get;set;}                       
@@ -64,7 +50,8 @@ namespace ChatClient
             string resource = "/login";
             string url = host + resource;
 
-            var request = new LoginRequest(userName);
+            var request = new LoginRequest();
+            request.UserName = userName;
             
             var json = JsonConvert.SerializeObject(request);
             Console.WriteLine(json);         
@@ -85,12 +72,8 @@ namespace ChatClient
     }
 
     public struct InputCommand{
-        public InputCommand(string in_command, string[] in_parameters){
-            Command = in_command;
-            Parameters = in_parameters;
-        }
-        public string Command {get;}
-        public string[] Parameters {get;} 
+        public string Command {get;set;}
+        public string[] Parameters {get;set;} 
     }
 
     interface ICommand{
@@ -177,7 +160,9 @@ namespace ChatClient
                         inputCommand = words[0].Replace("/", "");
                         Array.Resize(ref parameters, words.Length - 1);
                         Array.Copy(words, 1, parameters, 0, words.Length - 1);
-                        InputCommand command = new InputCommand(inputCommand, parameters);
+                        InputCommand command = new InputCommand();
+                        command.Command = inputCommand;
+                        command.Parameters = parameters;
 
                         if(commands.ContainsKey(command.Command)){
                             commands[command.Command].ExecuteCommand(command, msgToScreen, chat);
@@ -205,5 +190,3 @@ namespace ChatClient
         }
     }
 }
-
-//old code saved in sublime
