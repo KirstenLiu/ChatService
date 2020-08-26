@@ -71,22 +71,6 @@ namespace ChatClient
         }
     }
 
-    interface PrintOnScreen{
-        public void PrintMsg();
-    }
-
-    class Greet:PrintOnScreen{
-        public void PrintMsg(){
-            string msg = "Welcome to kiki's chat service. Please enter /<cmd> <param> to proceed, hit a single '&' to quit.";
-            Console.WriteLine(msg);
-        }
-    }
-            //msgToScreen.Add("cmdWarn", "Please type in a command at at beginning started with '/' or a single '&' to quit:");
-            //msgToScreen.Add("cmdNotExist", "Please enter an cmd in the following list:");
-            //msgToScreen.Add("cmdLsit", "login|logout");
-            //msgToScreen.Add("loginFail", "We are sorry, login fail. Please try again later.");
-            //msgToScreen.Add("emptyChatrooms", "You haven't joined any chatroom yet.");
-
 
     public struct InputCommand{
         public string Command {get;set;}
@@ -105,6 +89,9 @@ namespace ChatClient
         }
 
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
+            string loginFail = "We are sorry, login fail. Please try again later.";
+            string emptyChatrooms = "You haven't joined any chatroom yet.";
+
             string result = chat.Login(inputCommand.Parameters[0]).Result;
             LoginResponse deserializedResult = JsonConvert.DeserializeObject<LoginResponse>(result);
             Console.WriteLine("Debug logging: uid is {0}", deserializedResult.Uid.Id);
@@ -113,10 +100,10 @@ namespace ChatClient
                 if(deserializedResult.JoinedChatRoom != null){
                     Console.WriteLine(deserializedResult.JoinedChatRoom.ToString());
                 }else{
-                    Console.WriteLine(msgToScreen["emptyChatrooms"]);
+                    Console.WriteLine(emptyChatrooms);
                 }
             }else{
-                Console.WriteLine(msgToScreen["loginFail"]);
+                Console.WriteLine(loginFail);
             }
         }
     }
@@ -143,9 +130,14 @@ namespace ChatClient
     class RenderScreen{
         public static int MAX_PARAM = 4;
         public void Greeting(){            
-            Greet greet = new Greet();
-            greet.PrintMsg();
+            string greet = "Welcome to kiki's chat service. Please enter /<cmd> <param> to proceed, hit a single '&' to quit.";
             
+            string cmdWarn = "Please type in a command at at beginning started with '/' or a single '&' to quit:";
+            string cmdNotExist = "Please enter an cmd in the following list:";
+            string cmdList = "login|logout";
+            
+            Console.WriteLine(greet);
+
             string inLines = null;
             string[] words = null;
             string[] parameters = new string[MAX_PARAM];
@@ -175,11 +167,11 @@ namespace ChatClient
                         if(commands.ContainsKey(inputCommand.Command)){
                             commands[inputCommand.Command].ExecuteCommand(inputCommand, chat);
                         }else{
-                            Console.WriteLine(msgToScreen["cmdNotExist"]);
-                            Console.WriteLine(msgToScreen["cmdList"]);
+                            Console.WriteLine(cmdNotExist);
+                            Console.WriteLine(cmdList);
                         }                      
                     }else{
-                        Console.WriteLine(msgToScreen["cmdWarn"]);
+                        Console.WriteLine(cmdWarn);
                     }                  
                 }
                 catch(IOException e){
