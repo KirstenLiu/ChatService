@@ -108,20 +108,20 @@ namespace ChatClient
     }
 
     class Help:ICommand{
-        public Dictionary<string, ICommand> commands {get; set;}
+        public Dictionary<string, ICommand> Commands {get; set;}
         public void PrintDescription(){
             const string description = "list all commands the kiki's service provides.";
             Console.WriteLine(description);
         }
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
             Console.WriteLine("Complete command list:");
-            foreach (string command in this.commands.Keys){
+            foreach (string command in this.Commands.Keys){
                 Console.Write(command + " | ");
             }
             Console.WriteLine("\neach command details as follows:");
-            foreach(string command in this.commands.Keys){
+            foreach(string command in this.Commands.Keys){
                 Console.WriteLine(command + ":");
-                commands[command].PrintDescription();
+                Commands[command].PrintDescription();
             }          
         }
     }
