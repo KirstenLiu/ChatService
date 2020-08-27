@@ -5,5 +5,5 @@ design_doc.txt
 go.mod
 sequence_diagram.png
 .DS_Store
-client_csharp/obj
-client_csharp/bin
+client_csharp/obj/*
+client_csharp/bin/*
