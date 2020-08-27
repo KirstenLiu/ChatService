@@ -43,12 +43,12 @@ namespace ChatClient
 
     class ChatAPI
     {
-        public const string host = "http://localhost:8080";   
+        public const string Host = "http://localhost:8080";   
 
         public async Task<string> Login(string userName) {
             using var client = new HttpClient();
             string resource = "/login";
-            string url = host + resource;
+            string url = Host + resource;
 
             var request = new LoginRequest();
             request.UserName = userName;
@@ -83,8 +83,8 @@ namespace ChatClient
     }
 
     class Login:ICommand{
-        const string loginFail = "We are sorry, login fail. Please try again later.";
-        const string emptyChatrooms = "You haven't joined any chatroom yet.";
+        const string LoginFail = "We are sorry, login fail. Please try again later.";
+        const string EmptyChatrooms = "You haven't joined any chatroom yet.";
         public void PrintDescription(){
             const string description = "login the user, provide the list of chatrooms user are in. Need to provide one parameter as username.";
             Console.WriteLine(description);
@@ -99,10 +99,10 @@ namespace ChatClient
                 if(deserializedResult.JoinedChatRoom != null){
                     Console.WriteLine(deserializedResult.JoinedChatRoom.ToString());
                 }else{
-                    Console.WriteLine(emptyChatrooms);
+                    Console.WriteLine(EmptyChatrooms);
                 }
             }else{
-                Console.WriteLine(loginFail);
+                Console.WriteLine(LoginFail);
             }
         }
     }
@@ -129,11 +129,11 @@ namespace ChatClient
     class RenderScreen{
         public const int MAX_PARAM = 4;
 
-        const string greet = "Welcome to kiki's chat service. Please enter /<cmd> <param> to proceed, hit a single '&' to quit.";  
-        const string cmdWarn = "Please type in a command at at beginning started with '/' or a single '&' to quit:";
-        const string cmdNotExist = "Please enter an cmd in the following list:";
+        const string Greet = "Welcome to kiki's chat service. Please enter /<cmd> <param> to proceed, hit a single '&' to quit.";  
+        const string CmdWarn = "Please type in a command at at beginning started with '/' or a single '&' to quit:";
+        const string CmdNotExist = "Please enter an cmd in the following list:";
         public void Greeting(){            
-            Console.WriteLine(greet);
+            Console.WriteLine(Greet);
 
             string inLines = null;
             string[] words = null;
@@ -164,11 +164,11 @@ namespace ChatClient
                         if(commands.ContainsKey(inputCommand.Command)){
                             commands[inputCommand.Command].ExecuteCommand(inputCommand, chat);
                         }else{
-                            Console.WriteLine(cmdNotExist);
+                            Console.WriteLine(CmdNotExist);
                             help.ExecuteCommand(inputCommand, chat);
                         }                      
                     }else{
-                        Console.WriteLine(cmdWarn);
+                        Console.WriteLine(CmdWarn);
                     }                  
                 }
                 catch(IOException e){
