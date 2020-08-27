@@ -43,7 +43,7 @@ namespace ChatClient
 
     class ChatAPI
     {
-        public static string host = "http://localhost:8080";   
+        public const string host = "http://localhost:8080";   
 
         public async Task<string> Login(string userName) {
             using var client = new HttpClient();
@@ -83,15 +83,14 @@ namespace ChatClient
     }
 
     class Login:ICommand{
+        const string loginFail = "We are sorry, login fail. Please try again later.";
+        const string emptyChatrooms = "You haven't joined any chatroom yet.";
         public void PrintDescription(){
-            string description = "login the user, provide the list of chatrooms user are in. Need to provide one parameter as username.";
+            const string description = "login the user, provide the list of chatrooms user are in. Need to provide one parameter as username.";
             Console.WriteLine(description);
         }
 
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
-            string loginFail = "We are sorry, login fail. Please try again later.";
-            string emptyChatrooms = "You haven't joined any chatroom yet.";
-
             string result = chat.Login(inputCommand.Parameters[0]).Result;
             LoginResponse deserializedResult = JsonConvert.DeserializeObject<LoginResponse>(result);
             Console.WriteLine("Debug logging: uid is {0}", deserializedResult.Uid.Id);
@@ -109,11 +108,11 @@ namespace ChatClient
     }
 
     class Help:ICommand{
+        public Dictionary<string, ICommand> commands {get; set;}
         public void PrintDescription(){
-            string description = "list all commands the kiki's service provides.";
+            const string description = "list all commands the kiki's service provides.";
             Console.WriteLine(description);
         }
-        public Dictionary<string, ICommand> commands {get; set;}
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
             Console.WriteLine("Complete command list:");
             foreach (string command in this.commands.Keys){
@@ -128,14 +127,12 @@ namespace ChatClient
     }
 
     class RenderScreen{
-        public static int MAX_PARAM = 4;
+        public const int MAX_PARAM = 4;
+
+        const string greet = "Welcome to kiki's chat service. Please enter /<cmd> <param> to proceed, hit a single '&' to quit.";  
+        const string cmdWarn = "Please type in a command at at beginning started with '/' or a single '&' to quit:";
+        const string cmdNotExist = "Please enter an cmd in the following list:";
         public void Greeting(){            
-            string greet = "Welcome to kiki's chat service. Please enter /<cmd> <param> to proceed, hit a single '&' to quit.";
-            
-            string cmdWarn = "Please type in a command at at beginning started with '/' or a single '&' to quit:";
-            string cmdNotExist = "Please enter an cmd in the following list:";
-            string cmdList = "login|logout";
-            
             Console.WriteLine(greet);
 
             string inLines = null;
@@ -168,7 +165,7 @@ namespace ChatClient
                             commands[inputCommand.Command].ExecuteCommand(inputCommand, chat);
                         }else{
                             Console.WriteLine(cmdNotExist);
-                            Console.WriteLine(cmdList);
+                            help.ExecuteCommand(inputCommand, chat);
                         }                      
                     }else{
                         Console.WriteLine(cmdWarn);
