@@ -41,6 +41,17 @@ namespace ChatClient
 	 
     }
 
+    public struct SendMessageRequest{
+	    public string SenderName {get;set;}
+	    public string ReceiverName {get;set;}
+	    public string Message {get;set;}  
+}
+
+    public struct SendMessageResponse {
+	    public bool Success {get;set;}
+	    public long SentTime {get;set;}
+}
+
     class ChatAPI
     {
         public const string Host = "http://localhost:8080";   
@@ -54,10 +65,10 @@ namespace ChatClient
             request.UserName = userName;
             
             var json = JsonConvert.SerializeObject(request);
-            Console.WriteLine(json);         
+            //Console.WriteLine(json);         
             var data = new StringContent(json, Encoding.UTF8, "application/json");
-            Console.WriteLine(json.Length);
-            Console.WriteLine("before Exception");
+            //Console.WriteLine(json.Length);
+            //Console.WriteLine("before Exception");
             try{
                 var response = await client.PostAsync(url, data);
                 Task<String> resultTask = response.Content.ReadAsStringAsync();
@@ -69,8 +80,32 @@ namespace ChatClient
             }
             return "-100";           
         }
-    }
 
+        public async Task<string> SendMessage(string senderName, string receiverName, string message){
+            using var client = new HttpClient();
+            string resource = "/send";
+            string url = Host + resource;
+
+            SendMessageRequest request = new SendMessageRequest();
+            request.SenderName = senderName;
+            request.ReceiverName = receiverName;
+            request.Message = message;
+
+            var json = JsonConvert.SerializeObject(request);
+            var data = new StringContent(json, Encoding.UTF8, "application/json");
+            try{
+                var response = await client.PostAsync(url, data);
+                Task<String> resultTask = response.Content.ReadAsStringAsync();
+                var result = await resultTask;
+                return result;
+            }
+            catch(Exception e){
+                Console.WriteLine("{0} Exception caught.", e);
+            }
+
+            return "-101";
+        }
+    }
 
     public struct InputCommand{
         public string Command {get;set;}
@@ -103,6 +138,24 @@ namespace ChatClient
                 }
             }else{
                 Console.WriteLine(LoginFail);
+            }
+        }
+    }
+
+    class Send:ICommand{
+        public void PrintDescription(){
+            const string description = "/send <sender> <receiver> '<message>'. Send message as '<message>' to reciever. Reciver can be either an user or a chatroom.";
+            Console.WriteLine(description);
+        }
+
+        public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
+            string result = chat.SendMessage(inputCommand.Parameters[0], inputCommand.Parameters[1], inputCommand.Parameters[2]).Result;
+            SendMessageResponse deserializedResult = JsonConvert.DeserializeObject<SendMessageResponse>(result);
+            Console.WriteLine("Debug logging: success is {0}, timestamp is {1}", deserializedResult.Success, deserializedResult.SentTime);
+            if(deserializedResult.Success){
+                Console.WriteLine("Message sent");
+            }else{
+                Console.WriteLine("Fail to send message {0} to {1}", inputCommand.Parameters[2], inputCommand.Parameters[1]);
             }
         }
     }
@@ -146,8 +199,11 @@ namespace ChatClient
             commands.Add("login", login);
 
             Help help = new Help();
-            help.commands = commands;
+            help.Commands = commands;
             commands.Add("help", help);
+
+            Send send = new Send();
+            commands.Add("send", send);
 
             do {
                 try{

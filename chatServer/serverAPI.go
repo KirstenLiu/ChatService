@@ -143,7 +143,7 @@ type SendMessageRequest struct {
 
 type SendMessageResponse struct {
 	Success  bool
-	SentTime time.Time
+	SentTime int64
 }
 
 //SendMessage send defined message from sender to receiver. Receiver can be either an user or chat room.
@@ -155,7 +155,7 @@ func SendMessage(req SendMessageRequest) SendMessageResponse {
 
 	var res SendMessageResponse
 	res.Success = false
-	res.SentTime = time.Now()
+	res.SentTime = time.Now().Unix()
 	return res
 }
 
