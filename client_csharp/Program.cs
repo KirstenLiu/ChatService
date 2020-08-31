@@ -134,22 +134,27 @@ namespace ChatClient
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat);
     }
 
-    class Login:ICommand{
+    abstract class BaseCommand:ICommand { 
+        abstract public void  PrintDescription();
+        abstract public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat);
+        public LocalStorageData LocalStore = new LocalStorageData();
+    }
+
+    class Login:BaseCommand{
         const string LoginFail = "We are sorry, login fail. Please try again later.";
         const string EmptyChatrooms = "You haven't joined any chatroom yet.";
-        public void PrintDescription(){
+        override public void PrintDescription(){
             const string description = "login the user, provide the list of chatrooms user are in. Need to provide one parameter as username.";
             Console.WriteLine(description);
         }
 
-        public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
+        override public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
             string result = chat.Login(inputCommand.Parameters[0]).Result;
             LoginResponse deserializedResult = JsonConvert.DeserializeObject<LoginResponse>(result);
             Console.WriteLine("Debug logging: uid is {0}", deserializedResult.Uid.Id);
-            LocalStorageData localData = new LocalStorageData();
-            localData.User.Uid = deserializedResult.Uid;
-            localData.User.Uname = inputCommand.Parameters[0];
-            localData.User.JoinedChatRoom = localData.TransformChatRoom(deserializedResult.JoinedChatRoom);
+            base.LocalStore.User.Uid = deserializedResult.Uid;
+            base.LocalStore.User.Uname = inputCommand.Parameters[0];
+            base.LocalStore.User.JoinedChatRoom = base.LocalStore.TransformChatRoom(deserializedResult.JoinedChatRoom);
 
             if(deserializedResult.Success){
                 Console.WriteLine("you are now login. Please refer to following chatrooms names of your joined chatrooms:");
@@ -164,21 +169,17 @@ namespace ChatClient
         }
     }
 
-    class Send:ICommand{
-        public void PrintDescription(){
+    class Send:BaseCommand{
+        override public void PrintDescription(){
             const string description = "/send <sender> <receiver> '<message>'. Send message as '<message>' to reciever. Reciver can be either an user or a chatroom.";
             Console.WriteLine(description);
         }
 
-        public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
-            UserId userId = new UserId();
-            userId.Id = Int32.Parse(inputCommand.Parameters[0]);
-            //need lookup
-
+        override public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
             ChatRoomId sendToChatRoomId = new ChatRoomId();
-            sendToChatRoomId.Id = Int32.Parse(inputCommand.Parameters[1]);
+            sendToChatRoomId.Id = Int32.Parse(inputCommand.Parameters[0]);
 
-            string result = chat.SendMessage(userId, sendToChatRoomId, inputCommand.Parameters[2]).Result;
+            string result = chat.SendMessage(base.LocalStore.User.Uid, sendToChatRoomId, inputCommand.Parameters[1]).Result;
             if(result == "404"){
                 Console.WriteLine("Debug logging: 404 not found");
             }else{
