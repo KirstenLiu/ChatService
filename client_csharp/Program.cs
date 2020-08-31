@@ -42,15 +42,29 @@ namespace ChatClient
     }
 
     public struct SendMessageRequest{
-	    public string SenderName {get;set;}
-	    public string ReceiverName {get;set;}
+	    public UserId SenderId {get;set;}
+	    public ChatRoomId ReceiverId {get;set;}
 	    public string Message {get;set;}  
-}
+    }
 
     public struct SendMessageResponse {
 	    public bool Success {get;set;}
 	    public long SentTime {get;set;}
-}
+    }
+
+    class LocalStorageData{
+        public User User = new User();
+
+        public ChatRoomId[] TransformChatRoom(ChatRoom[] chatrooms){
+            int index = 0;
+            ChatRoomId[] chatRoomIds = new ChatRoomId[chatrooms.Length];
+
+            for(index = 0; index < chatrooms.Length; index ++){
+                chatRoomIds[index] = chatrooms[index].Cid;
+            }
+            return chatRoomIds;
+        }
+    }
 
     class ChatAPI
     {
@@ -81,14 +95,14 @@ namespace ChatClient
             return "-100";           
         }
 
-        public async Task<string> SendMessage(string senderName, string receiverName, string message){
+        public async Task<string> SendMessage(UserId senderId, ChatRoomId receiverId, string message){
             using var client = new HttpClient();
             string resource = "/send";
             string url = Host + resource;
 
             SendMessageRequest request = new SendMessageRequest();
-            request.SenderName = senderName;
-            request.ReceiverName = receiverName;
+            request.SenderId = senderId;
+            request.ReceiverId = receiverId;
             request.Message = message;
 
             var json = JsonConvert.SerializeObject(request);
@@ -129,6 +143,11 @@ namespace ChatClient
             string result = chat.Login(inputCommand.Parameters[0]).Result;
             LoginResponse deserializedResult = JsonConvert.DeserializeObject<LoginResponse>(result);
             Console.WriteLine("Debug logging: uid is {0}", deserializedResult.Uid.Id);
+            LocalStorageData localData = new LocalStorageData();
+            localData.User.Uid = deserializedResult.Uid;
+            localData.User.Uname = inputCommand.Parameters[0];
+            localData.User.JoinedChatRoom = localData.TransformChatRoom(deserializedResult.JoinedChatRoom);
+
             if(deserializedResult.Success){
                 Console.WriteLine("you are now login. Please refer to following chatrooms names of your joined chatrooms:");
                 if(deserializedResult.JoinedChatRoom != null){
@@ -149,7 +168,13 @@ namespace ChatClient
         }
 
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
-            string result = chat.SendMessage(inputCommand.Parameters[0], inputCommand.Parameters[1], inputCommand.Parameters[2]).Result;
+            UserId userId = new UserId();
+            userId.Id = Int32.Parse(inputCommand.Parameters[0]);
+
+            ChatRoomId sendToChatRoomId = new ChatRoomId();
+            sendToChatRoomId.Id = Int32.Parse(inputCommand.Parameters[1]);
+
+            string result = chat.SendMessage(userId, sendToChatRoomId, inputCommand.Parameters[2]).Result;
             SendMessageResponse deserializedResult = JsonConvert.DeserializeObject<SendMessageResponse>(result);
             Console.WriteLine("Debug logging: success is {0}, timestamp is {1}", deserializedResult.Success, deserializedResult.SentTime);
             if(deserializedResult.Success){

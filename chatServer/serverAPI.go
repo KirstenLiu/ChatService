@@ -137,7 +137,7 @@ func LeaveChatRoom(req LeaveChatRoomRequest) LeaveChatRoomResponse {
 
 type SendMessageRequest struct {
 	SenderId   UserId
-	ReceiverId UserId
+	ReceiverId ChatRoomId
 	Message    string
 }
 
