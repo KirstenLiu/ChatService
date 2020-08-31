@@ -56,6 +56,9 @@ namespace ChatClient
         public User User = new User();
 
         public ChatRoomId[] TransformChatRoom(ChatRoom[] chatrooms){
+            if (chatrooms == null){
+                return null;
+            }
             int index = 0;
             ChatRoomId[] chatRoomIds = new ChatRoomId[chatrooms.Length];
 
@@ -170,17 +173,22 @@ namespace ChatClient
         public void ExecuteCommand(InputCommand inputCommand, ChatAPI chat){
             UserId userId = new UserId();
             userId.Id = Int32.Parse(inputCommand.Parameters[0]);
+            //need lookup
 
             ChatRoomId sendToChatRoomId = new ChatRoomId();
             sendToChatRoomId.Id = Int32.Parse(inputCommand.Parameters[1]);
 
             string result = chat.SendMessage(userId, sendToChatRoomId, inputCommand.Parameters[2]).Result;
-            SendMessageResponse deserializedResult = JsonConvert.DeserializeObject<SendMessageResponse>(result);
-            Console.WriteLine("Debug logging: success is {0}, timestamp is {1}", deserializedResult.Success, deserializedResult.SentTime);
-            if(deserializedResult.Success){
-                Console.WriteLine("Message sent");
+            if(result == "404"){
+                Console.WriteLine("Debug logging: 404 not found");
             }else{
-                Console.WriteLine("Fail to send message {0} to {1}", inputCommand.Parameters[2], inputCommand.Parameters[1]);
+                SendMessageResponse deserializedResult = JsonConvert.DeserializeObject<SendMessageResponse>(result);
+                Console.WriteLine("Debug logging: success is {0}, timestamp is {1}", deserializedResult.Success, deserializedResult.SentTime);
+                if(deserializedResult.Success){
+                    Console.WriteLine("Message sent");
+                }else{
+                    Console.WriteLine("Fail to send message {0} to {1}", inputCommand.Parameters[2], inputCommand.Parameters[1]);
+                }
             }
         }
     }
